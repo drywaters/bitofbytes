@@ -62,8 +62,8 @@ func run(cfg models.Config) error {
 	r.Get("/blog", blogController.Index)
 	r.Get("/posts/{slug}", blogController.Blog)
 
-	assetsHandler := http.FileServer(http.Dir("assets"))
-	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
+	staticHandler := http.FileServer(http.Dir("static"))
+	r.Get("/static/*", http.StripPrefix("/static", staticHandler).ServeHTTP)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
