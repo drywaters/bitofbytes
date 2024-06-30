@@ -4,18 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- swap out with generated CSS file -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <title>BitOfBytes</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
-    <nav class="flex items-center justify-between bg-cyan-950 p-6 mb-4 shadow-xl shadow-slate-400">
-        <div class="flex items-center flex-shrink-0 text-white mr-6">
+    <nav class="fixed top-0 left-0 right-0 flex items-center justify-between bg-cyan-950 p-6 mb-4 shadow-xl shadow-slate-400">
+        <div class="flex items-center flex-shrink-0 mr-6">
             <img class="size-24 rounded-full ml-10"
-                 src="/assets/bitofbytes-logo-small.png" alt="BitOfBytes Logo">
+                 src="/static/bitofbytes-logo-small.png" alt="BitOfBytes Logo">
         </div>
-        <div class="block">
+        <div class="menu block">
             <ul class="flex space-x-4">
                 <li><a href="/" class="text-green-400 hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
                 <li><a href="/about" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">About</a></li>
@@ -26,8 +29,6 @@
     </nav>
 </header>
 {{ end }}
-
-
 {{ define "footer" }}
 </body>
 </html>
