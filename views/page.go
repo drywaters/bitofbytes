@@ -3,13 +3,15 @@ package views
 import (
 	"bytes"
 	"fmt"
-	"github.com/gorilla/csrf"
 	"html/template"
 	"io"
 	"io/fs"
 	"log"
 	"net/http"
 	"path"
+	"strings"
+
+	"github.com/gorilla/csrf"
 )
 
 func Must(p Page, err error) Page {
@@ -26,8 +28,8 @@ func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 			"csrfField": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented")
 			},
-			"errors": func() []string {
-				return nil
+			"getName": func() string {
+				return ""
 			},
 		},
 	).ParseFS(fs, patterns...)
@@ -37,15 +39,17 @@ func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 	}
 	return Page{
 		htmlTpl: tpl,
+		name:    path.Base(strings.Split(patterns[0], ".")[0]),
 	}, nil
 }
 
 type Page struct {
+	name    string
 	htmlTpl *template.Template
 }
 
-func (t Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
-	tpl, err := t.htmlTpl.Clone()
+func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
+	tpl, err := p.htmlTpl.Clone()
 	if err != nil {
 		log.Printf("cloning template: %v", err)
 		http.Error(w, "There was an error rendering the page", http.StatusInternalServerError)
@@ -54,6 +58,9 @@ func (t Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 	tpl.Funcs(template.FuncMap{
 		"csrfField": func() template.HTML {
 			return csrf.TemplateField(r)
+		},
+		"getName": func() string {
+			return p.name
 		},
 	})
 	w.Header().Set("Content-Type", "text/html")
