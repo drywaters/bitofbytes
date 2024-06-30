@@ -15,15 +15,15 @@
 <header>
     <nav class="fixed top-0 left-0 right-0 flex items-center justify-between bg-cyan-950 p-6 mb-4 shadow-xl shadow-slate-400">
         <div class="flex items-center flex-shrink-0 mr-6">
-            <img class="size-24 rounded-full ml-10"
+            <img class="size-10 lg:size-24 rounded-full lg:ml-10"
                  src="/static/bitofbytes-logo-small.png" alt="BitOfBytes Logo">
         </div>
         <div class="menu block">
-            <ul class="flex space-x-4">
-                <li><a href="/" class="text-green-400 hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
-                <li><a href="/about" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">About</a></li>
-                <li><a href="/blog" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
-                <li><a href="/contact" class="text-gray-300 hover:bg-gray-700 px-3 py-2 rounded">Contact</a></li>
+            <ul class="text-lg font-bold flex lg:gap-5 lg:text-4xl">
+                <li><a href="/" class="{{ if eq getName "home" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
+                <li><a href="/about" class="{{ if eq getName "about" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">About</a></li>
+                <li><a href="/blog" class="{{ if eq getName "blog" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
+                <li><a href="/contact" class="{{ if eq getName "contact" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Contact</a></li>
             </ul>
         </div>
     </nav>
