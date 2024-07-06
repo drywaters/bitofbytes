@@ -53,11 +53,9 @@ func run(cfg models.Config) error {
 	r.Use(middleware.Logger)
 	r.Use(csrfMw)
 	r.Get("/", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "home.gohtml", "base.gohtml"))))
-	r.Get("/about", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "about.gohtml", "base.gohtml"))))
-	r.Get("/contact", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "contact.gohtml", "base.gohtml"))))
+		views.Must(views.ParseFS(templates.FS, "home.gohtml", "infoCard.gohtml", "base.gohtml"))))
+	r.Get("/utilities", controllers.StaticHandler(
+		views.Must(views.ParseFS(templates.FS, "utilities.gohtml", "base.gohtml"))))
 
 	r.Get("/blog", blogController.Index)
 	r.Get("/posts/{slug}", blogController.Blog)
