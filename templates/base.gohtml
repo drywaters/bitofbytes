@@ -11,19 +11,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-slate-600">
 <header>
-    <nav class="fixed top-0 left-0 right-0 flex items-center justify-between bg-cyan-950 p-6 mb-4 shadow-xl shadow-slate-400">
+    <nav class="fixed top-0 left-0 right-0 flex items-center justify-between bg-cyan-950 p-2 mb-4 sm:p-6">
         <div class="flex items-center flex-shrink-0 mr-6">
             <img class="size-10 lg:size-24 rounded-full lg:ml-10"
                  src="/static/bitofbytes-logo-small.png" alt="BitOfBytes Logo">
         </div>
         <div class="menu block">
             <ul class="text-lg font-bold flex lg:gap-5 lg:text-4xl">
-                <li><a href="/" class="{{ if eq getName "home" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
-                <li><a href="/about" class="{{ if eq getName "about" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">About</a></li>
-                <li><a href="/blog" class="{{ if eq getName "blog" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
-                <li><a href="/contact" class="{{ if eq getName "contact" }} text-green-400 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Contact</a></li>
+                <li><a href="/" class="{{ if eq getName "home" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
+                <li><a href="#" class="{{ if eq getName "about" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Utilities</a></li>
+                <li><a href="#" class="{{ if eq getName "blog" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
             </ul>
         </div>
     </nav>
