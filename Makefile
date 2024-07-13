@@ -1,4 +1,4 @@
-.PHONY: docker-build local push run tail-watch tail-prod 
+.PHONY: docker-build local docker-push run tail-watch tail-prod 
 
 local:
 	make -j 2 tail-watch run
@@ -6,11 +6,11 @@ local:
 docker-build:
 	docker build . --tag drywaters/bob
 
+docker-push:
+	docker push drywaters/bob:latest
+
 run:
 	go run ./cmd/bob/bob.go
-
-push:
-	docker push drywaters/bob:latest
 
 tail-watch: 
 	tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/styles.css -o ./static/styles.css --watch
