@@ -6,9 +6,6 @@ import (
 	"os"
 )
 
-type PostService struct {
-}
-
 type Post struct {
 	Title   string `toml:"title"`
 	Slug    string `toml:"slug"`
@@ -19,6 +16,9 @@ type Post struct {
 type Author struct {
 	Name  string `toml:"name"`
 	Email string `toml:"email"`
+}
+
+type PostService struct {
 }
 
 func (p PostService) Read(slug string) (string, error) {
