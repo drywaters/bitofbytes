@@ -31,7 +31,7 @@ func run(cfg models.Config) error {
 		// Add DB when needed
 	}
 
-	// setup auth middleware if needed
+	// setup CSRF protection
 	csrfKey := []byte(cfg.CSRF.Key)
 	csrfMw := csrf.Protect(
 		csrfKey,

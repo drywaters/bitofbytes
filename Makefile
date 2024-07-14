@@ -10,7 +10,7 @@ docker-push:
 	docker push drywaters/bob:latest
 
 run:
-	go run ./cmd/bob/bob.go
+	air
 
 tail-watch: 
 	tailwindcss -c ./tailwind/tailwind.config.js -i ./tailwind/styles.css -o ./static/styles.css --watch
