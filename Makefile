@@ -1,4 +1,4 @@
-.PHONY: docker-build local docker-push run tail-watch tail-prod 
+.PHONY: docker-build docker-publish docker-push local run tail-watch tail-prod 
 
 local:
 	make -j 2 tail-watch run
@@ -8,6 +8,9 @@ docker-build:
 
 docker-push:
 	docker push drywaters/bob:latest
+
+docker-publish:
+	make docker-build docker-push
 
 run:
 	air
