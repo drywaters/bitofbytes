@@ -13,6 +13,38 @@ import (
 	"github.com/gorilla/csrf"
 )
 
+type Page struct {
+	name    string
+	htmlTpl *template.Template
+}
+
+func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
+	tpl, err := p.htmlTpl.Clone()
+	if err != nil {
+		log.Printf("cloning template: %v", err)
+		http.Error(w, "There was an error rendering the page", http.StatusInternalServerError)
+		return
+	}
+	tpl.Funcs(template.FuncMap{
+		"csrfField": func() template.HTML {
+			return csrf.TemplateField(r)
+		},
+		"pageName": func() string {
+			return p.name
+		},
+	})
+	w.Header().Set("Content-Type", "text/html")
+	var buf bytes.Buffer
+	err = tpl.Execute(&buf, data)
+	if err != nil {
+		log.Printf("executing template: %v", err)
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		return
+	}
+
+	io.Copy(w, &buf)
+}
+
 func Must(p Page, err error) Page {
 	if err != nil {
 		panic(err)
@@ -27,6 +59,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 			"csrfField": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented")
 			},
+			"pageName": func() string {
+				return ""
+			},
 		},
 	).ParseFS(fs, patterns...)
 
@@ -37,42 +72,4 @@ func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 		htmlTpl: tpl,
 		name:    path.Dir(patterns[0]),
 	}, nil
-}
-
-type Page struct {
-	name    string
-	htmlTpl *template.Template
-}
-
-type PageData map[string]any
-
-func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
-	pageData := struct {
-		PageData PageData
-		Data     any
-	}{
-		PageData: map[string]any{"Name": p.name},
-		Data:     data,
-	}
-	tpl, err := p.htmlTpl.Clone()
-	if err != nil {
-		log.Printf("cloning template: %v", err)
-		http.Error(w, "There was an error rendering the page", http.StatusInternalServerError)
-		return
-	}
-	tpl.Funcs(template.FuncMap{
-		"csrfField": func() template.HTML {
-			return csrf.TemplateField(r)
-		},
-	})
-	w.Header().Set("Content-Type", "text/html")
-	var buf bytes.Buffer
-	err = tpl.Execute(&buf, pageData)
-	if err != nil {
-		log.Printf("executing template: %v", err)
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		return
-	}
-
-	io.Copy(w, &buf)
 }

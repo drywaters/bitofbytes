@@ -43,8 +43,8 @@ func run(cfg models.Config) error {
 	blogController := controllers.Blog{
 		PostService: postService,
 		Templates: controllers.BlogTemplates{
-			Index: views.Must(views.ParseFS(templates.FS, "blog/index.templ", "base.templ")),
-			Post:  views.Must(views.ParseFS(templates.FS, "blog/post.templ", "base.templ")),
+			Index: views.Must(views.ParseFS(templates.FS, "blog/index.gohtml", "base.gohtml")),
+			Post:  views.Must(views.ParseFS(templates.FS, "blog/post.gohtml", "base.gohtml")),
 		},
 	}
 
@@ -53,9 +53,9 @@ func run(cfg models.Config) error {
 	r.Use(middleware.Logger)
 	r.Use(csrfMw)
 	r.Get("/", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "home/index.templ", "home/infocard.templ", "base.templ"))))
+		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 	r.Get("/utils", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "utils/index.templ", "base.templ"))))
+		views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml"))))
 
 	r.Get("/blog", blogController.Index)
 	r.Get("/posts/{slug}", blogController.Blog)
