@@ -30,6 +30,7 @@ func run(cfg models.Config) error {
 	postService := models.PostService{
 		// Add DB when needed
 	}
+	utilsService := models.UtilsService{}
 
 	// setup CSRF protection
 	csrfKey := []byte(cfg.CSRF.Key)
@@ -48,15 +49,32 @@ func run(cfg models.Config) error {
 		},
 	}
 
+	utilsController := controllers.Utils{
+		UtilsService: utilsService,
+		Templates: controllers.UtilsTemplates{
+			Index: views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml")),
+			Strings: controllers.StringsTemplates{
+				LengthResponse: views.Must(views.ParseFS(templates.FS, "utils/strings/length_response.gohtml")),
+			},
+		},
+	}
+
 	// Setup our router and routes
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(csrfMw)
 	r.Get("/", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
-	r.Get("/utils", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml"))))
 
+	// Utils
+	r.Get("/utils", utilsController.Index)
+
+	// String Utils
+	r.Get("/utils/strings/length", controllers.StaticHandler(
+		views.Must(views.ParseFS(templates.FS, "utils/strings/length.gohtml", "base.gohtml"))))
+	r.Post("/utils/strings/length", utilsController.StringsLength)
+
+	// Blog
 	r.Get("/blog", blogController.Index)
 	r.Get("/posts/{slug}", blogController.Blog)
 

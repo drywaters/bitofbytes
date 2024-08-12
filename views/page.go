@@ -9,13 +9,14 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"strings"
 
 	"github.com/gorilla/csrf"
 )
 
 type Page struct {
-	name    string
-	htmlTpl *template.Template
+	category string
+	htmlTpl  *template.Template
 }
 
 func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
@@ -29,8 +30,8 @@ func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 		"csrfField": func() template.HTML {
 			return csrf.TemplateField(r)
 		},
-		"pageName": func() string {
-			return p.name
+		"category": func() string {
+			return p.category
 		},
 	})
 	w.Header().Set("Content-Type", "text/html")
@@ -54,12 +55,13 @@ func Must(p Page, err error) Page {
 
 func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 	var page Page
+	category, _, _ := strings.Cut(patterns[0], "/")
 	tpl, err := template.New(path.Base(patterns[0])).Funcs(
 		template.FuncMap{
 			"csrfField": func() (template.HTML, error) {
 				return "", fmt.Errorf("csrfField not implemented")
 			},
-			"pageName": func() string {
+			"category": func() string {
 				return ""
 			},
 		},
@@ -68,8 +70,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Page, error) {
 	if err != nil {
 		return page, fmt.Errorf("parsing template: %w", err)
 	}
+
 	return Page{
-		htmlTpl: tpl,
-		name:    path.Dir(patterns[0]),
+		htmlTpl:  tpl,
+		category: category,
 	}, nil
 }
