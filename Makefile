@@ -1,7 +1,9 @@
-.PHONY: docker-build local docker-push run tail-watch tail-prod 
+.PHONY: build docker-build local docker-push run tail-watch tail-prod 
 
 local:
 	make -j 2 tail-watch run
+
+build: tail-prod docker-build docker-push
 
 docker-build:
 	docker build . --tag drywaters/bob
