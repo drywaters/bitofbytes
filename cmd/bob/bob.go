@@ -30,6 +30,9 @@ func run(cfg models.Config) error {
 	postService := models.PostService{
 		// Add DB when needed
 	}
+	base64Service := models.Base64Service{
+		// Add DB when needed
+	}
 
 	// setup CSRF protection
 	csrfKey := []byte(cfg.CSRF.Key)
@@ -48,15 +51,35 @@ func run(cfg models.Config) error {
 		},
 	}
 
+	utilsController := controllers.Utils{
+		Base64Service: base64Service,
+		Templates: controllers.UtilsTemplates{
+			Index: views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml")),
+			Base64: controllers.Base64Templates{
+				Base64Response: views.Must(views.ParseFS(templates.FS, "utils/base64/base64_response.gohtml")),
+			},
+		},
+	}
+
 	// Setup our router and routes
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(csrfMw)
 	r.Get("/", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
-	r.Get("/utils", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml"))))
 
+	// Utils
+	r.Get("/utils", utilsController.Index)
+
+	// Base64 Utils
+	r.Get("/utils/base64/encode", controllers.StaticHandler(
+		views.Must(views.ParseFS(templates.FS, "utils/base64/encode.gohtml", "base.gohtml"))))
+	r.Post("/utils/base64/encode", utilsController.Encode)
+	r.Get("/utils/base64/decode", controllers.StaticHandler(
+		views.Must(views.ParseFS(templates.FS, "utils/base64/decode.gohtml", "base.gohtml"))))
+	r.Post("/utils/base64/decode", utilsController.Decode)
+
+	// Blog
 	r.Get("/blog", blogController.Index)
 	r.Get("/posts/{slug}", blogController.Blog)
 

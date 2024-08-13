@@ -20,15 +20,16 @@
         </div>
         <div class="menu block">
             <ul class="text-lg font-bold flex lg:gap-5 lg:text-4xl">
-                <!-- <li><a href="/" class="{{ if eq pageName "home" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Home</a></li> -->
-                <!-- <li><a href="/utils" class="{{ if eq pageName "utils" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Utils</a></li> -->
-                <!-- <li><a href="#" class="{{ if eq pageName "blog" }} text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li> -->
+                <li><a href="/" class="{{ if eq category "home" }}text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Home</a></li>
+                <li><a href="/utils" class="{{ if eq category "utils" }}text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Utils</a></li>
+                <li><a href="/blog" class="{{ if eq category "blog" }}text-green-700 {{ else }} text-gray-300 {{ end }} hover:bg-gray-700 px-3 py-2 rounded">Blog</a></li>
             </ul>
         </div>
     </nav>
 </header>
 {{ end }}
 {{ define "footer" }}
+<script src="/static/htmx.min.js"></script>
 </body>
 </html>
 {{ end }}
