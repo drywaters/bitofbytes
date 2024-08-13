@@ -8,13 +8,13 @@ import (
 )
 
 type Utils struct {
-	UtilsService models.UtilsService
-	Templates    UtilsTemplates
+	Base64Service models.Base64Service
+	Templates     UtilsTemplates
 }
 
 type UtilsTemplates struct {
-	Index   views.Page
-	Strings StringsTemplates
+	Index  views.Page
+	Base64 Base64Templates
 }
 
 func (u *Utils) Index(w http.ResponseWriter, r *http.Request) {

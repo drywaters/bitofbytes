@@ -2,15 +2,17 @@ package controllers
 
 import (
 	"bytes"
+	"html/template"
+	"net/http"
+	"strings"
+
 	"github.com/DryWaters/bitofbytes/models"
 	"github.com/DryWaters/bitofbytes/views"
 	"github.com/adrg/frontmatter"
 	"github.com/go-chi/chi/v5"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
-	"html/template"
-	"net/http"
-	"strings"
+	"github.com/yuin/goldmark/parser"
 )
 
 type Blog struct {
@@ -42,6 +44,7 @@ func (b Blog) Blog(w http.ResponseWriter, r *http.Request) {
 				highlighting.WithStyle("dracula"),
 			),
 		),
+		goldmark.WithParserOptions(parser.WithAttribute()),
 	)
 	var buf bytes.Buffer
 	err = mdRenderer.Convert(rest, &buf)
