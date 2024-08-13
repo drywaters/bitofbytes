@@ -3,6 +3,8 @@
 local:
 	make -j 2 tail-watch run
 
+build: tail-prod docker-build docker-push
+
 docker-build:
 	docker build . --tag drywaters/bob
 
