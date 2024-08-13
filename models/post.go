@@ -2,8 +2,9 @@ package models
 
 import (
 	"html/template"
-	"io"
-	"os"
+	"io/fs"
+
+	"github.com/DryWaters/bitofbytes/posts"
 )
 
 type Post struct {
@@ -22,17 +23,7 @@ type PostService struct {
 }
 
 func (p PostService) Read(slug string) (string, error) {
-	f, err := os.Open("posts/" + slug + ".md")
-	if err != nil {
-		return "", err
-	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-
-		}
-	}(f)
-	b, err := io.ReadAll(f)
+	b, err := fs.ReadFile(posts.FS, slug+".md")
 	if err != nil {
 		return "", err
 	}
