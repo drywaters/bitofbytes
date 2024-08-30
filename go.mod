@@ -4,7 +4,6 @@ go 1.22
 
 require (
 	github.com/adrg/frontmatter v0.2.0
-	github.com/go-chi/chi/v5 v5.0.14
 	github.com/gorilla/csrf v1.7.2
 	github.com/joho/godotenv v1.5.1
 	github.com/yuin/goldmark v1.7.2

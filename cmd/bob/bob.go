@@ -6,8 +6,6 @@ import (
 	"github.com/DryWaters/bitofbytes/models"
 	"github.com/DryWaters/bitofbytes/templates"
 	"github.com/DryWaters/bitofbytes/views"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
 	"net/http"
 )
@@ -62,35 +60,30 @@ func run(cfg models.Config) error {
 	}
 
 	// Setup our router and routes
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(csrfMw)
-	r.Get("/", controllers.StaticHandler(
+	r := http.NewServeMux()
+	csrfRouter := csrfMw(r)
+	r.HandleFunc("GET /", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 
 	// Utils
-	r.Get("/utils", utilsController.Index)
+	r.HandleFunc("GET /utils", utilsController.Index)
 
 	// Base64 Utils
-	r.Get("/utils/base64/encode", controllers.StaticHandler(
+	r.HandleFunc("GET /utils/base64/encode", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "utils/base64/encode.gohtml", "base.gohtml"))))
-	r.Post("/utils/base64/encode", utilsController.Encode)
-	r.Get("/utils/base64/decode", controllers.StaticHandler(
+	r.HandleFunc("POST /utils/base64/encode", utilsController.Encode)
+	r.HandleFunc("GET /utils/base64/decode", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "utils/base64/decode.gohtml", "base.gohtml"))))
-	r.Post("/utils/base64/decode", utilsController.Decode)
+	r.HandleFunc("POST /utils/base64/decode", utilsController.Decode)
 
 	// Blog
-	r.Get("/blog", blogController.Index)
-	r.Get("/posts/{slug}", blogController.Blog)
+	r.HandleFunc("GET /blog", blogController.Index)
+	r.HandleFunc("GET /posts/{slug}", blogController.Blog)
 
 	staticHandler := http.FileServer(http.Dir("static"))
-	r.Get("/static/*", http.StripPrefix("/static", staticHandler).ServeHTTP)
-
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Page not found", http.StatusNotFound)
-	})
+	r.Handle("GET /static/", http.StripPrefix("/static/", staticHandler))
 
 	// Start the server
 	fmt.Println("Starting the server on ", cfg.Server.Address)
-	return http.ListenAndServe(cfg.Server.Address, r)
+	return http.ListenAndServe(cfg.Server.Address, csrfRouter)
 }
