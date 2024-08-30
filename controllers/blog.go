@@ -9,7 +9,6 @@ import (
 	"github.com/DryWaters/bitofbytes/models"
 	"github.com/DryWaters/bitofbytes/views"
 	"github.com/adrg/frontmatter"
-	"github.com/go-chi/chi/v5"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/parser"
@@ -31,7 +30,7 @@ func (b Blog) Index(w http.ResponseWriter, r *http.Request) {
 
 func (b Blog) Blog(w http.ResponseWriter, r *http.Request) {
 	var post models.Post
-	slug := chi.URLParam(r, "slug")
+	slug := r.PathValue("slug")
 	postMarkdown, err := b.PostService.Read(slug)
 	if err != nil {
 		http.Error(w, "Post not found", http.StatusNotFound)
