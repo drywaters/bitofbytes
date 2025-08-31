@@ -1,13 +1,10 @@
 FROM node:latest as tailwind-builder
 WORKDIR /templates
 RUN npm init -y && \
-    npm install @tailwindcss/typography && \
-    npm install tailwindcss && \
-    npx tailwindcss init
+    npm install tailwindcss @tailwindcss/typography
 COPY ./templates ./templates
-COPY ./tailwind/tailwind.config.js src/tailwind.config.js
 COPY ./tailwind/styles.css src/styles.css
-RUN npx tailwindcss -c src/tailwind.config.js -i src/styles.css -o /styles.css --minify
+RUN npx tailwindcss -i src/styles.css -o /styles.css --minify
 
 FROM golang:alpine AS builder
 WORKDIR /app

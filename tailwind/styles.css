@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Enable official plugins */
+@plugin "@tailwindcss/typography";
+
+/* Tell Tailwind where to scan for class usage */
+@source "./templates/**/*.gohtml";
 
 .menu {
   font-family: "Ubuntu Sans Mono", monospace;
