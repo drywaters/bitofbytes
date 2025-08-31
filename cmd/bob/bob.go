@@ -54,8 +54,12 @@ func run(cfg models.Config) error {
 		Templates: controllers.UtilsTemplates{
 			Index: views.Must(views.ParseFS(templates.FS, "utils/index.gohtml", "base.gohtml")),
 			Base64: controllers.Base64Templates{
-				Base64Response: views.Must(views.ParseFS(templates.FS, "utils/base64/base64_response.gohtml")),
+				Base64EncodeResponse: views.Must(views.ParseFS(templates.FS, "utils/base64/base64_response_encode.gohtml")),
+				Base64DecodeResponse: views.Must(views.ParseFS(templates.FS, "utils/base64/base64_response_decode.gohtml")),
+				Base64Error:          views.Must(views.ParseFS(templates.FS, "utils/base64/base64_error.gohtml")),
 			},
+			Base64EncodePage: views.Must(views.ParseFS(templates.FS, "utils/base64/encode.gohtml", "base.gohtml")),
+			Base64DecodePage: views.Must(views.ParseFS(templates.FS, "utils/base64/decode.gohtml", "base.gohtml")),
 		},
 	}
 
@@ -69,11 +73,9 @@ func run(cfg models.Config) error {
 	r.HandleFunc("GET /utils", utilsController.Index)
 
 	// Base64 Utils
-	r.HandleFunc("GET /utils/base64/encode", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "utils/base64/encode.gohtml", "base.gohtml"))))
+	r.HandleFunc("GET /utils/base64/encode", utilsController.EncodeGET)
 	r.HandleFunc("POST /utils/base64/encode", utilsController.Encode)
-	r.HandleFunc("GET /utils/base64/decode", controllers.StaticHandler(
-		views.Must(views.ParseFS(templates.FS, "utils/base64/decode.gohtml", "base.gohtml"))))
+	r.HandleFunc("GET /utils/base64/decode", utilsController.DecodeGET)
 	r.HandleFunc("POST /utils/base64/decode", utilsController.Decode)
 
 	// Blog

@@ -2,20 +2,29 @@
 
 <div class="container max-w-4xl mx-auto">
 	<div class="flex flex-col">
-		<div class="mt-24 lg:mt-52 w-full bg-slate-200">
+        <div class="mt-24 lg:mt-52 w-full bg-slate-200 border border-gray-300 rounded shadow-md">
 			<div class="m-8">
 				<div class="flex justify-around">
 					<span class="text-4xl font-bold">Base64 Encoding</span>
 					<input id="btnSubmit" value="SUBMIT" type="submit" form="form" class="bg-cyan-950 text-gray-300 hover:bg-gray-700 rounded-xl font-bold text-l p-2 border-4 border-green-700"></input>
 				</div>
-				<form id="form" class="flex flex-col" hx-post="/utils/base64/encode" hx-target="#response">
-					{{ csrfField }}
-					<textarea name="str" class="mt-8 p-2" autocomplete="off" autofocus="true" cols="100" maxLength="1024" rows="13"></textarea>
-				</form>
-				<div class="mt-4">
-					<p class="text-xl">Encoded:</p>
-					<div class="flex flex-col" id="response"></div>
-				</div>
+                <form id="form" class="flex flex-col" hx-post="/utils/base64/encode" hx-target="#response">
+                    {{ csrfField }}
+                    <div class="mt-4 flex gap-4 items-center">
+                        <label class="flex items-center gap-2"><input type="checkbox" name="urlSafe"> <span>URL-safe</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" name="noPad"> <span>No padding</span></label>
+                    </div>
+                    <textarea name="str" class="mt-8 p-2 bg-white text-gray-900 border border-gray-300 rounded" autocomplete="off" autofocus="true" cols="100" maxLength="1024" rows="13"></textarea>
+                </form>
+                <div class="mt-4">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xl">Encoded:</p>
+                        <button type="button" id="copy-top"
+                            class="hidden bg-cyan-950 text-gray-300 hover:bg-gray-700 rounded-xl font-bold text-l p-2 border-4 border-green-700">COPY</button>
+                    </div>
+                    <div class="flex flex-col" id="response"></div>
+                </div>
+                
 			</div>
 		</div>
 	</div>
