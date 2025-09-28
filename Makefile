@@ -6,10 +6,10 @@ local:
 build: tail-prod docker-build docker-push
 
 docker-build:
-	docker build . --tag drywaters/bob
+	docker build . --tag 192.168.1.2:9000/bob:latest
 
 docker-push:
-	docker push drywaters/bob:latest
+	docker push 192.168.1.2:9000/bob:latest
 
 docker-publish:
 	make docker-build docker-push
