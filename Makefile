@@ -6,7 +6,7 @@ local:
 build: tail-prod docker-build docker-push
 
 docker-build:
-	docker build . --tag 192.168.1.2:9000/bob:latest
+	docker build -f Docker/Dockerfile . --tag 192.168.1.2:9000/bob:latest
 
 docker-push:
 	docker push 192.168.1.2:9000/bob:latest
