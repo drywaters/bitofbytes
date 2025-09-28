@@ -11,6 +11,7 @@
 
 # Tailwind generated styles
 static/styles.css
+tailwind/bin/
 
 # Test binary, built with `go test -c`
 *.test
@@ -20,6 +21,7 @@ static/styles.css
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
 
 # Go workspace file
 go.work
