@@ -65,6 +65,12 @@ func run(cfg models.Config) error {
 	r.HandleFunc("GET /", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 
+	// Healthcheck
+	r.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
+
 	// Utils
 	r.HandleFunc("GET /utils", utilsController.Index)
 

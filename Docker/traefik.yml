@@ -70,6 +70,12 @@ services:
   bob:
     image: 192.168.1.2:9000/bob:latest
     networks: [proxy]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     deploy:
       replicas: 3
       labels:
