@@ -1,4 +1,4 @@
-.PHONY: configure-image docker-build docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
+.PHONY: configure-image docker-build docker-deploy docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
 
 configure-image:
 	$(eval REGISTRY ?= 192.168.1.2:9000)
@@ -24,6 +24,9 @@ docker-push: ensure-image-tag
 
 docker-publish:
 	make docker-build docker-push
+
+docker-deploy: ensure-image-tag
+	BOB_IMAGE=$(IMAGE) docker stack deploy -c Docker/traefik.yml proxy
 
 run:
 	air
