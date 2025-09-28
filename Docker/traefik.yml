@@ -68,7 +68,7 @@ services:
           - node.role == manager
 
   bob:
-    image: 192.168.1.2:9000/bob:latest
+    image: ${BOB_IMAGE?Set BOB_IMAGE to the full image reference (e.g. 192.168.1.2:9000/bob:abc123)}
     networks: [proxy]
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/healthz || exit 1"]
