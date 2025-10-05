@@ -51,7 +51,6 @@ jobs:
       - name: Debug refs
         run: |
           echo "IMAGE_REG=${IMAGE_REG}"
-          echo "IMAGE_NAME=${IMAGE_NAME}"
           echo "TAG=${{ steps.meta.outputs.TAG }}"
 
       - name: make build-github (push)
