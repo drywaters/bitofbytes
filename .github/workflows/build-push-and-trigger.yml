@@ -9,8 +9,8 @@ jobs:
     environment:
       name: crystal1
     env:
-      IMAGE_REG: ${{ var.IMAGE_REG }}
-      IMAGE_REPO: ${{ var.IMAGE_REPO }}
+      IMAGE_REG: ${{ vars.IMAGE_REG }}
+      IMAGE_REPO: ${{ vars.IMAGE_REPO }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,7 +73,7 @@ jobs:
 
       - name: Push main to local bare repo (trigger hook)
         env:
-          MANAGER: ${{ var.MANAGER_HOST }}
+          MANAGER: ${{ vars.MANAGER_HOST }}
         run: |
           set -euo pipefail
           git remote add local "ssh://git@${MANAGER}/srv/git/bob-ci.git"
