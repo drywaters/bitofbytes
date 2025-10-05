@@ -6,6 +6,8 @@ on:
 jobs:
   build-and-trigger:
     runs-on: ubuntu-latest
+    environment:
+      name: crystal1
     env:
       IMAGE_REG: registry.bitofbytes.io
       IMAGE_NAME: bob
