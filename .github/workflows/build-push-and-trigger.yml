@@ -9,8 +9,8 @@ jobs:
     environment:
       name: crystal1
     env:
-      IMAGE_REG: registry.bitofbytes.io
-      IMAGE_REPO: bob
+      IMAGE_REG: ${{ var.IMAGE_REG }}
+      IMAGE_REPO: ${{ var.IMAGE_REPO }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,7 +60,6 @@ jobs:
             REGISTRY="${IMAGE_REG}" \
             IMAGE_TAG="${{ steps.meta.outputs.TAG }}"
 
-      # Push code to your on-prem bare repo to trigger the post-receive hook
       - name: Install SSH key & known_hosts
         env:
           DEPLOY_KEY: ${{ secrets.LOCAL_REPO_DEPLOY_KEY }}
@@ -74,7 +73,7 @@ jobs:
 
       - name: Push main to local bare repo (trigger hook)
         env:
-          MANAGER: manager.bitofbytes.io   # change to your Swarm manager DNS/IP
+          MANAGER: ${{ var.MANAGER_HOST }}
         run: |
           set -euo pipefail
           git remote add local "ssh://git@${MANAGER}/srv/git/bob-ci.git"
