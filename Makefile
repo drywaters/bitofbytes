@@ -1,4 +1,4 @@
-.PHONY: configure-image build-github docker-build-github docker-push-github docker-build docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
+.PHONY: configure-image build-github docker-build-push-github docker-build docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
 
 configure-image:
 	$(eval REGISTRY ?= registry.bitofbytes.io)
@@ -34,16 +34,12 @@ tail-watch:
 tail-prod:
 	tailwindcss -i ./tailwind/styles.css -o ./static/styles.css --minify
 
-build-github: tail-prod configure-image docker-build-github docker-push-github
+build-github: tail-prod configure-image docker-build-push-github
 
-docker-build-github:
-	echo ">> Building $(IMAGE)"
+docker-build-push-github:
+	echo ">> Building and pushing $(IMAGE)"
 	-docker buildx inspect >/dev/null 2>&1 || docker buildx create --use
 	docker buildx build -f Docker/Dockerfile . \
 		--platform=linux/amd64 \
 		-t $(IMAGE) \
 		--push
-
-docker-push-github:
-	@echo ">> Pushing $(IMAGE)"
-	docker push $(IMAGE)
