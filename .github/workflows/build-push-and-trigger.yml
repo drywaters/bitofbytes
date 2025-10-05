@@ -28,8 +28,7 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      # 👉 Create .env consumed by your Makefile / build scripts
-      - name: Create .env
+      - name: Create .env for Makefile / build scripts
         shell: bash
         run: |
           install -m 600 /dev/null .env
@@ -38,7 +37,6 @@ jobs:
             echo "CSRF_SECURE=${{ vars.CSRF_SECURE }}"
             echo "CSRF_KEY=${{ secrets.CSRF_KEY }}"
           } >> .env
-          # optional: show non-secret keys only
           grep -E '^(SERVER_ADDRESS|CSRF_SECURE)=' .env || true
 
       - name: Install Tailwind CLI binary
