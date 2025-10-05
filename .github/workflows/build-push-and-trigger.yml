@@ -48,9 +48,18 @@ jobs:
           sudo mv tailwindcss-linux-x64 /usr/local/bin/tailwindcss
           tailwindcss --version   # sanity check
 
-      - name: make build (push)
+      - name: Debug refs
         run: |
-          make build-github
+          echo "IMAGE_REG=${IMAGE_REG}"
+          echo "IMAGE_NAME=${IMAGE_NAME}"
+          echo "TAG=${{ steps.meta.outputs.TAG }}"
+
+      - name: make build-github (push)
+        run: |
+          make build-github \
+            REGISTRY="${IMAGE_REG}" \
+            IMAGE="${IMAGE_NAME}" \
+            TAG="${{ steps.meta.outputs.TAG }}"
 
       # Push code to your on-prem bare repo to trigger the post-receive hook
       - name: Install SSH key & known_hosts
