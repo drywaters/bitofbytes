@@ -48,8 +48,6 @@ jobs:
           sudo mv tailwindcss-linux-x64 /usr/local/bin/tailwindcss
           tailwindcss --version   # sanity check
 
-      # Build & push using your Makefile (single source of truth)
-      # Adjust var names if your Makefile expects different ones.
       - name: make build (push)
         run: |
           make build-github

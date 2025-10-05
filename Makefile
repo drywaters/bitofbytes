@@ -39,7 +39,7 @@ build-github: tail-prod configure-image docker-build-github docker-push-github
 docker-build-github:
 	echo ">> Building $(IMAGE)"
 	-docker buildx inspect >/dev/null 2>&1 || docker buildx create --use
-	docker buildx build . \
+	docker buildx build -f Docker/Dockerfile . \
 		--platform=linux/amd64 \
 		-t $(IMAGE) \
 		--push
