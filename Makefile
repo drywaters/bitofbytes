@@ -1,7 +1,7 @@
 .PHONY: configure-image docker-build docker-deploy docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
 
 configure-image:
-	$(eval REGISTRY ?= 192.168.1.2:9000)
+	$(eval REGISTRY ?= registry.bitofbytes.io)
 	$(eval IMAGE_NAME ?= $(REGISTRY)/bob)
 	$(eval SHORT_SHA := $(shell git rev-parse --short HEAD))
 	$(eval IMAGE_TAG ?= $(SHORT_SHA))
