@@ -10,7 +10,7 @@ jobs:
       name: crystal1
     env:
       IMAGE_REG: registry.bitofbytes.io
-      IMAGE_NAME: bob
+      IMAGE_REPO: bob
     steps:
       - uses: actions/checkout@v4
 
@@ -58,8 +58,7 @@ jobs:
         run: |
           make build-github \
             REGISTRY="${IMAGE_REG}" \
-            IMAGE="${IMAGE_NAME}" \
-            TAG="${{ steps.meta.outputs.TAG }}"
+            IMAGE_TAG="${{ steps.meta.outputs.TAG }}"
 
       # Push code to your on-prem bare repo to trigger the post-receive hook
       - name: Install SSH key & known_hosts
