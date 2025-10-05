@@ -40,6 +40,6 @@ docker-build-push-github:
 	echo ">> Building and pushing $(IMAGE)"
 	-docker buildx inspect >/dev/null 2>&1 || docker buildx create --use
 	docker buildx build -f Docker/Dockerfile . \
-		--platform=linux/amd64 \
+		--platform=linux/arm64/v8 \
 		-t $(IMAGE) \
 		--push
