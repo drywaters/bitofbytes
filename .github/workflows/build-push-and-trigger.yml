@@ -52,7 +52,7 @@ jobs:
       # Adjust var names if your Makefile expects different ones.
       - name: make build (push)
         run: |
-          make build REGISTRY="${IMAGE_REG}" IMAGE="${IMAGE_NAME}" TAG="${{ steps.meta.outputs.TAG }}" PUSH=1
+          make build-github
 
       # Push code to your on-prem bare repo to trigger the post-receive hook
       - name: Install SSH key & known_hosts
