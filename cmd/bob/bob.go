@@ -34,6 +34,7 @@ func run(cfg models.Config) error {
 
 	// setup CSRF protection
 	csrfMw := middleware.CSRF(cfg.CSRF.Key, cfg.CSRF.Secure)
+	cspMw := middleware.SecureHeaders
 
 	// setup controllers
 	blogController := controllers.Blog{
@@ -57,7 +58,7 @@ func run(cfg models.Config) error {
 	// Setup our router and routes
 	r := http.NewServeMux()
 	csrfRouter := csrfMw(r)
-	cspRouter := middleware.SecureHeaders(csrfRouter)
+	secureRouter := cspMw(csrfRouter)
 	r.HandleFunc("GET /", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 
@@ -87,5 +88,5 @@ func run(cfg models.Config) error {
 
 	// Start the server
 	fmt.Println("Starting the server on ", cfg.Server.Address)
-	return http.ListenAndServe(cfg.Server.Address, cspRouter)
+	return http.ListenAndServe(cfg.Server.Address, secureRouter)
 }
