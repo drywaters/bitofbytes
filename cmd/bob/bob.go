@@ -33,9 +33,8 @@ func run(cfg models.Config) error {
 	}
 
 	// setup CSRF protection
-	csrfKey := []byte(cfg.CSRF.Key)
 	csrfMw := csrf.Protect(
-		csrfKey,
+		cfg.CSRF.Key,
 		csrf.Secure(cfg.CSRF.Secure),
 		csrf.Path("/"),
 	)
