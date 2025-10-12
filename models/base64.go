@@ -1,8 +1,14 @@
 package models
 
 import (
+	"bytes"
 	"encoding/base64"
+	"errors"
 )
+
+const maxBase64DecodeLen = 4 * 1024
+
+var ErrBase64InputTooLarge = errors.New("base64 input exceeds maximum length")
 
 type Base64Service struct{}
 
@@ -12,9 +18,17 @@ func (s *Base64Service) Encode(b []byte) string {
 }
 
 func (s *Base64Service) Decode(b []byte) (string, error) {
-	dst := make([]byte, len(b))
+	trimmed := bytes.TrimSpace(b)
+	if len(trimmed) > maxBase64DecodeLen {
+		return "", ErrBase64InputTooLarge
+	}
 
-	n, err := base64.StdEncoding.Decode(dst, b)
+	dst := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
 
-	return string(dst[:n]), err
+	n, err := base64.StdEncoding.Decode(dst, trimmed)
+	if err != nil {
+		return "", err
+	}
+
+	return string(dst[:n]), nil
 }
