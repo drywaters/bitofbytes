@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/DryWaters/bitofbytes/controllers"
 	"github.com/DryWaters/bitofbytes/controllers/middleware"
 	"github.com/DryWaters/bitofbytes/models"
 	"github.com/DryWaters/bitofbytes/templates"
 	"github.com/DryWaters/bitofbytes/views"
-	"net/http"
 )
 
 func main() {
@@ -87,6 +89,17 @@ func run(cfg models.Config) error {
 	r.Handle("GET /static/", http.StripPrefix("/static/", staticHandler))
 
 	// Start the server
-	fmt.Println("Starting the server on ", cfg.Server.Address)
-	return http.ListenAndServe(cfg.Server.Address, secureRouter)
+	server := &http.Server{
+		Addr:              cfg.Server.Address,
+		Handler:           secureRouter,
+		ReadTimeout:       5 * time.Second,
+		ReadHeaderTimeout: 2 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+	}
+
+	log.Printf("Starting the server on %s", cfg.Server.Address)
+
+	return server.ListenAndServe()
 }
