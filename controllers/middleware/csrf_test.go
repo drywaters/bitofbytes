@@ -11,7 +11,7 @@ import (
 func TestCSRF(t *testing.T) {
 	t.Parallel()
 
-	const key = "01234567890123456789012345678901"
+	key := []byte("01234567890123456789012345678901")
 
 	handler := CSRF(key, true)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token := csrf.Token(r); token == "" {

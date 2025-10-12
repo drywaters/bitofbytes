@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -11,7 +12,7 @@ import (
 
 type Config struct {
 	CSRF struct {
-		Key    string
+		Key    []byte
 		Secure bool
 	}
 	Server struct {
@@ -45,7 +46,7 @@ func LoadEnvConfig() (Config, error) {
 	}
 	cfg.CSRF.Secure = secure
 
-	csrfKey := os.Getenv("CSRF_KEY")
+	csrfKey := strings.TrimSpace(os.Getenv("CSRF_KEY"))
 	if csrfKey == "" {
 		keyPath := os.Getenv("CSRF_KEY_FILE")
 		if keyPath == "" {
@@ -67,6 +68,15 @@ func LoadEnvConfig() (Config, error) {
 		return cfg, errors.New("load config: CSRF key is empty")
 	}
 
-	cfg.CSRF.Key = csrfKey
+	decodedKey, err := base64.StdEncoding.DecodeString(csrfKey)
+	if err != nil {
+		return cfg, fmt.Errorf("load config: decode CSRF key: %w", err)
+	}
+
+	if keyLen := len(decodedKey); keyLen != 32 {
+		return cfg, fmt.Errorf("load config: CSRF key must decode to 32 bytes, got %d", keyLen)
+	}
+
+	cfg.CSRF.Key = decodedKey
 	return cfg, nil
 }
