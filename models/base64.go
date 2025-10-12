@@ -25,7 +25,7 @@ func (s *Base64Service) Decode(b []byte) (string, error) {
 
 	dst := make([]byte, base64.StdEncoding.DecodedLen(len(trimmed)))
 
-	n, err := base64.StdEncoding.Strict().Decode(dst, trimmed)
+	n, err := base64.StdEncoding.Decode(dst, trimmed)
 	if err != nil {
 		return "", err
 	}
