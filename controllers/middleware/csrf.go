@@ -9,9 +9,9 @@ import (
 const csrfCookiePath = "/"
 
 // CSRF returns middleware that configures gorilla/csrf with the provided key and flags.
-func CSRF(key string, secure bool) func(http.Handler) http.Handler {
+func CSRF(key []byte, secure bool) func(http.Handler) http.Handler {
 	return csrf.Protect(
-		[]byte(key),
+		key,
 		csrf.Secure(secure),
 		csrf.Path(csrfCookiePath),
 	)
