@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/DryWaters/bitofbytes/controllers"
+	"github.com/DryWaters/bitofbytes/controllers/middleware"
 	"github.com/DryWaters/bitofbytes/models"
 	"github.com/DryWaters/bitofbytes/templates"
 	"github.com/DryWaters/bitofbytes/views"
-	"github.com/gorilla/csrf"
 	"net/http"
 )
 
@@ -33,12 +33,8 @@ func run(cfg models.Config) error {
 	}
 
 	// setup CSRF protection
-	csrfKey := []byte(cfg.CSRF.Key)
-	csrfMw := csrf.Protect(
-		csrfKey,
-		csrf.Secure(cfg.CSRF.Secure),
-		csrf.Path("/"),
-	)
+	csrfMw := middleware.CSRF(cfg.CSRF.Key, cfg.CSRF.Secure)
+	cspMw := middleware.SecureHeaders
 
 	// setup controllers
 	blogController := controllers.Blog{
@@ -62,6 +58,7 @@ func run(cfg models.Config) error {
 	// Setup our router and routes
 	r := http.NewServeMux()
 	csrfRouter := csrfMw(r)
+	secureRouter := cspMw(csrfRouter)
 	r.HandleFunc("GET /", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 
@@ -91,5 +88,5 @@ func run(cfg models.Config) error {
 
 	// Start the server
 	fmt.Println("Starting the server on ", cfg.Server.Address)
-	return http.ListenAndServe(cfg.Server.Address, csrfRouter)
+	return http.ListenAndServe(cfg.Server.Address, secureRouter)
 }
