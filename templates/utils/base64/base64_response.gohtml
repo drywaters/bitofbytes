@@ -1,1 +1,6 @@
+{{ if .Error }}
+<div class="mt-2 rounded border border-red-300 bg-red-50 p-3 text-red-900" role="alert">
+        {{ .Error }}
+</div>
+{{ end }}
 <textarea name="str" class="mt-4 p-2" readonly="true" autocomplete="off" autofocus="true" cols="100" maxLength="1024" rows="13">{{ .Response }}</textarea>
