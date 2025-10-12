@@ -17,9 +17,17 @@ RUN go build -v -o ./bob ./cmd/bob/
 FROM alpine
 WORKDIR /bob
 COPY ./static ./static
-COPY .env .env
 COPY --from=builder /app/bob ./bob
 COPY --from=tailwind-builder /styles.css ./static/styles.css
+RUN addgroup -S bob \
+    && adduser -S -G bob bob \
+    && chown -R bob:bob /bob
+
+ENV CSRF_KEY_FILE=/run/secrets/csrf_key
+ENV SERVER_ADDRESS=:3000
+ENV CSRF_SECURE=true
+
+USER bob
 
 EXPOSE 3000
 CMD ["./bob"]

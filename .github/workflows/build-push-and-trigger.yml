@@ -29,17 +29,6 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: Create .env for Makefile / build scripts
-        shell: bash
-        run: |
-          install -m 600 /dev/null .env
-          {
-            echo "SERVER_ADDRESS=${{ vars.SERVER_ADDRESS }}"
-            echo "CSRF_SECURE=${{ vars.CSRF_SECURE }}"
-            echo "CSRF_KEY=${{ secrets.CSRF_KEY }}"
-          } >> .env
-          grep -E '^(SERVER_ADDRESS|CSRF_SECURE)=' .env || true
-
       - name: Install Tailwind CLI binary
         run: |
           curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-arm64
