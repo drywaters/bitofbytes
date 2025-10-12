@@ -10,7 +10,7 @@
 				</div>
 				<form id="form" class="flex flex-col" hx-post="/utils/base64/encode" hx-target="#response">
 					{{ csrfField }}
-					<textarea name="str" class="mt-8 p-2" autocomplete="off" autofocus="true" cols="100" maxLength="1024" rows="13"></textarea>
+                                        <textarea name="str" class="mt-8 p-4 bg-white border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-green-700" autocomplete="off" autofocus="true" cols="100" maxLength="1024" rows="13"></textarea>
 				</form>
 				<div class="mt-4">
 					<p class="text-xl">Encoded:</p>
