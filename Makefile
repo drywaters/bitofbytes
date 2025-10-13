@@ -6,6 +6,7 @@ configure-image:
 	$(eval SHORT_SHA := $(shell git rev-parse --short HEAD))
 	$(eval IMAGE_TAG ?= $(SHORT_SHA))
 	$(eval IMAGE := $(IMAGE_NAME):$(IMAGE_TAG))
+	$(eval LOG_LEVEL ?= warn)
 	@true
 
 ensure-image-tag: configure-image
@@ -21,6 +22,7 @@ build: tail-prod docker-build docker-push
 
 docker-build: ensure-image-tag
 	docker build -f Docker/Dockerfile \
+		--build-arg LOG_LEVEL=$(LOG_LEVEL) \
 		-t $(IMAGE) \
 		.
 
@@ -43,5 +45,6 @@ docker-build-push-github:
 	-docker buildx inspect >/dev/null 2>&1 || docker buildx create --use
 	docker buildx build -f Docker/Dockerfile . \
 		--platform=linux/arm64/v8 \
+		--build-arg LOG_LEVEL=$(LOG_LEVEL) \
 		-t $(IMAGE) \
 		--push

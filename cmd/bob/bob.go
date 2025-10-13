@@ -1,8 +1,9 @@
 package main
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/DryWaters/bitofbytes/controllers"
@@ -16,14 +17,27 @@ func main() {
 	// load config
 	cfg, err := models.LoadEnvConfig()
 	if err != nil {
-		panic(err)
+		fallback := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
+		fallback.Error("load configuration", "error", err)
+		os.Exit(1)
 	}
 
-	// run with config
-	err = run(cfg)
+	logger, err := models.NewLogger(cfg.Logging)
+	if err != nil {
+		fallback := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
+		fallback.Error("initialize logger", "error", err)
+		os.Exit(1)
+	}
+
+	slog.SetDefault(logger)
+
+	if err := run(cfg, logger); err != nil {
+		logger.Error("server exited", "error", err)
+		os.Exit(1)
+	}
 }
 
-func run(cfg models.Config) error {
+func run(cfg models.Config, logger *slog.Logger) error {
 	// TODO:  Setup database
 
 	// setup services
@@ -37,6 +51,7 @@ func run(cfg models.Config) error {
 	// setup CSRF protection
 	csrfMw := middleware.CSRF(cfg.CSRF.Key, cfg.CSRF.Secure)
 	cspMw := middleware.SecureHeaders
+	loggingMw := middleware.RequestLogger(logger)
 
 	// setup controllers
 	blogController := controllers.Blog{
@@ -59,8 +74,10 @@ func run(cfg models.Config) error {
 
 	// Setup our router and routes
 	r := http.NewServeMux()
-	csrfRouter := csrfMw(r)
-	secureRouter := cspMw(csrfRouter)
+	var handler http.Handler = r
+	handler = csrfMw(handler)
+	handler = cspMw(handler)
+	handler = loggingMw(handler)
 	r.HandleFunc("GET /", controllers.StaticHandler(
 		views.Must(views.ParseFS(templates.FS, "home/index.gohtml", "home/infocard.gohtml", "base.gohtml"))))
 
@@ -91,7 +108,7 @@ func run(cfg models.Config) error {
 	// Start the server
 	server := &http.Server{
 		Addr:              cfg.Server.Address,
-		Handler:           secureRouter,
+		Handler:           handler,
 		ReadTimeout:       5 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 		WriteTimeout:      10 * time.Second,
@@ -99,7 +116,7 @@ func run(cfg models.Config) error {
 		MaxHeaderBytes:    1 << 20,
 	}
 
-	log.Printf("Starting the server on %s", cfg.Server.Address)
+	logger.Info("Starting the server", "address", cfg.Server.Address)
 
 	return server.ListenAndServe()
 }

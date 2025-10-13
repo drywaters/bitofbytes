@@ -15,6 +15,7 @@ COPY . .
 RUN go build -v -o ./bob ./cmd/bob/
 
 FROM alpine
+ARG LOG_LEVEL=warn
 WORKDIR /bob
 COPY ./static ./static
 COPY --from=builder /app/bob ./bob
@@ -26,6 +27,7 @@ RUN addgroup -S bob \
 ENV CSRF_KEY_FILE=/run/secrets/csrf_key
 ENV SERVER_ADDRESS=:3000
 ENV CSRF_SECURE=true
+ENV LOG_LEVEL=${LOG_LEVEL}
 
 USER bob
 

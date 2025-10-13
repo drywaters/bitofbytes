@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
-	"log"
+	"log/slog"
 	"net/http"
 	"path"
 	"strings"
@@ -22,7 +22,7 @@ type Page struct {
 func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 	tpl, err := p.htmlTpl.Clone()
 	if err != nil {
-		log.Printf("cloning template: %v", err)
+		slog.Error("cloning template", "error", err)
 		http.Error(w, "There was an error rendering the page", http.StatusInternalServerError)
 		return
 	}
@@ -38,7 +38,7 @@ func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 	var buf bytes.Buffer
 	err = tpl.Execute(&buf, data)
 	if err != nil {
-		log.Printf("executing template: %v", err)
+		slog.Error("executing template", "error", err)
 		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
 		return
 	}

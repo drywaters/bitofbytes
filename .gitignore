@@ -25,6 +25,8 @@ static/styles.css
 go.work
 go.work.sum
 
+error.log
+
 .env
 .idea/
 tmp/
