@@ -1,5 +1,7 @@
 .PHONY: configure-image build-github docker-build-push-github docker-build docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
 
+LOG_LEVEL ?= warn
+
 configure-image:
 	$(eval REGISTRY ?= registry.bitofbytes.io)
 	$(eval IMAGE_NAME ?= $(REGISTRY)/bob)
@@ -21,6 +23,7 @@ build: tail-prod docker-build docker-push
 
 docker-build: ensure-image-tag
 	docker build -f Docker/Dockerfile \
+		--build-arg LOG_LEVEL=$(LOG_LEVEL) \
 		-t $(IMAGE) \
 		.
 
@@ -43,5 +46,6 @@ docker-build-push-github:
 	-docker buildx inspect >/dev/null 2>&1 || docker buildx create --use
 	docker buildx build -f Docker/Dockerfile . \
 		--platform=linux/arm64/v8 \
+		--build-arg LOG_LEVEL=$(LOG_LEVEL) \
 		-t $(IMAGE) \
 		--push

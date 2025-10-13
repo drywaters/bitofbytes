@@ -4,10 +4,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/joho/godotenv"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -18,7 +20,20 @@ type Config struct {
 	Server struct {
 		Address string
 	}
+	Logging LoggingConfig
 }
+
+type LoggingConfig struct {
+	Level  slog.Level
+	Format LoggingFormat
+}
+
+type LoggingFormat string
+
+const (
+	LoggingFormatText LoggingFormat = "text"
+	LoggingFormatJSON LoggingFormat = "json"
+)
 
 // LoadEnvConfig load new configuration from environment
 func LoadEnvConfig() (Config, error) {
@@ -78,5 +93,48 @@ func LoadEnvConfig() (Config, error) {
 	}
 
 	cfg.CSRF.Key = decodedKey
+
+	if err := loadLoggingConfig(&cfg); err != nil {
+		return cfg, err
+	}
+
 	return cfg, nil
+}
+
+func loadLoggingConfig(cfg *Config) error {
+	level := strings.TrimSpace(os.Getenv("LOG_LEVEL"))
+
+	if level == "" {
+		level = "info"
+	}
+
+	switch strings.ToLower(level) {
+	case "debug":
+		cfg.Logging.Level = slog.LevelDebug
+	case "info":
+		cfg.Logging.Level = slog.LevelInfo
+	case "warn", "warning":
+		cfg.Logging.Level = slog.LevelWarn
+	case "error":
+		cfg.Logging.Level = slog.LevelError
+	default:
+		return fmt.Errorf("load config: invalid LOG_LEVEL %q", level)
+	}
+
+	format := strings.TrimSpace(os.Getenv("LOG_FORMAT"))
+	if format == "" {
+		cfg.Logging.Format = LoggingFormatText
+		return nil
+	}
+
+	switch strings.ToLower(format) {
+	case string(LoggingFormatText):
+		cfg.Logging.Format = LoggingFormatText
+	case string(LoggingFormatJSON):
+		cfg.Logging.Format = LoggingFormatJSON
+	default:
+		return fmt.Errorf("load config: invalid LOG_FORMAT %q", format)
+	}
+
+	return nil
 }
