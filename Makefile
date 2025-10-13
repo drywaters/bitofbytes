@@ -1,13 +1,12 @@
 .PHONY: configure-image build-github docker-build-push-github docker-build docker-publish docker-push ensure-image-tag local run tail-watch tail-prod
 
-LOG_LEVEL ?= warn
-
 configure-image:
 	$(eval REGISTRY ?= registry.bitofbytes.io)
 	$(eval IMAGE_NAME ?= $(REGISTRY)/bob)
 	$(eval SHORT_SHA := $(shell git rev-parse --short HEAD))
 	$(eval IMAGE_TAG ?= $(SHORT_SHA))
 	$(eval IMAGE := $(IMAGE_NAME):$(IMAGE_TAG))
+	$(eval LOG_LEVEL ?= warn)
 	@true
 
 ensure-image-tag: configure-image
