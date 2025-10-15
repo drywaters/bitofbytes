@@ -4,6 +4,7 @@ import (
 	"html"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 	"testing/fstest"
@@ -39,7 +40,10 @@ func TestUtilsEncodeWritesEncodedString(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/encode", strings.NewReader("str=hello world"))
+	form := url.Values{}
+	form.Set("encoding", "standard")
+	form.Set("str", "hello world")
+	req := httptest.NewRequest(http.MethodPost, "/encode", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
@@ -72,7 +76,10 @@ func TestUtilsDecodeWritesDecodedString(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader("str=aGVsbG8gd29ybGQ="))
+	form := url.Values{}
+	form.Set("encoding", "standard")
+	form.Set("str", "aGVsbG8gd29ybGQ=")
+	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
@@ -101,7 +108,10 @@ func TestUtilsDecodeHandlesInvalidInput(t *testing.T) {
 		},
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader("str=not-base64"))
+	form := url.Values{}
+	form.Set("encoding", "standard")
+	form.Set("str", "not-base64")
+	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
@@ -125,7 +135,10 @@ func TestUtilsDecodeHandlesOversizedInput(t *testing.T) {
 	}
 
 	largeInput := strings.Repeat("A", 4097)
-	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader("str="+largeInput))
+	form := url.Values{}
+	form.Set("encoding", "standard")
+	form.Set("str", largeInput)
+	req := httptest.NewRequest(http.MethodPost, "/decode", strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
 
@@ -135,5 +148,32 @@ func TestUtilsDecodeHandlesOversizedInput(t *testing.T) {
 	want := "The submitted text is too large to decode. Please limit it to 4 KB or less."
 	if !strings.Contains(body, want) {
 		t.Fatalf("expected oversized error message %q, got %q", want, body)
+	}
+}
+
+func TestUtilsHandlesUnknownEncoding(t *testing.T) {
+	t.Parallel()
+
+	utils := &Utils{
+		Base64Service: models.Base64Service{},
+		Templates: UtilsTemplates{
+			Base64: Base64Templates{Base64Response: newTestBase64Page(t)},
+		},
+	}
+
+	form := url.Values{}
+	form.Set("encoding", "unknown")
+	form.Set("str", "hello")
+
+	req := httptest.NewRequest(http.MethodPost, "/encode", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+
+	utils.Encode(rr, req)
+
+	body := html.UnescapeString(rr.Body.String())
+	want := "The selected Base64 variant is not supported."
+	if !strings.Contains(body, want) {
+		t.Fatalf("expected unknown encoding error message %q, got %q", want, body)
 	}
 }
