@@ -19,7 +19,15 @@ type base64Response struct {
 
 func (u *Utils) Encode(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
-	encoded := u.Base64Service.Encode([]byte(r.PostFormValue("str")))
+	encoded, err := u.Base64Service.Encode([]byte(r.PostFormValue("str")), r.PostFormValue("encoding"))
+	if err != nil {
+		message := "The selected Base64 variant is not supported."
+		u.Templates.Base64.Base64Response.Execute(w, r, base64Response{
+			Error: message,
+		})
+		return
+	}
+
 	u.Templates.Base64.Base64Response.Execute(w, r, base64Response{
 		Response: encoded,
 	})
@@ -28,11 +36,13 @@ func (u *Utils) Encode(w http.ResponseWriter, r *http.Request) {
 func (u *Utils) Decode(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "text/html")
 
-	str, err := u.Base64Service.Decode([]byte(r.PostFormValue("str")))
+	str, err := u.Base64Service.Decode([]byte(r.PostFormValue("str")), r.PostFormValue("encoding"))
 	if err != nil {
 		message := "We couldn't decode the submitted text. Please verify it is valid Base64."
 		if errors.Is(err, models.ErrBase64InputTooLarge) {
 			message = "The submitted text is too large to decode. Please limit it to 4 KB or less."
+		} else if errors.Is(err, models.ErrBase64UnknownEncoding) {
+			message = "The selected Base64 variant is not supported."
 		}
 
 		u.Templates.Base64.Base64Response.Execute(w, r, base64Response{

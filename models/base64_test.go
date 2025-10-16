@@ -13,7 +13,12 @@ func TestBase64Encode(t *testing.T) {
 	service := Base64Service{}
 	input := []byte("foobar")
 
-	if got, want := service.Encode(input), base64.StdEncoding.EncodeToString(input); got != want {
+	got, err := service.Encode(input, "standard")
+	if err != nil {
+		t.Fatalf("Encode(%q) unexpected error: %v", input, err)
+	}
+
+	if want := base64.StdEncoding.EncodeToString(input); got != want {
 		t.Fatalf("Encode(%q) = %q, want %q", input, got, want)
 	}
 }
@@ -56,7 +61,7 @@ func TestBase64Decode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			decoded, err := service.Decode([]byte(tt.input))
+			decoded, err := service.Decode([]byte(tt.input), "standard")
 
 			if tt.wantErr != nil {
 				if !errors.Is(err, tt.wantErr) {
@@ -81,5 +86,70 @@ func TestBase64Decode(t *testing.T) {
 				t.Fatalf("Decode(%q) = %q, want %q", tt.input, decoded, tt.want)
 			}
 		})
+	}
+}
+
+func TestBase64SupportsAdditionalEncodings(t *testing.T) {
+	t.Parallel()
+
+	service := Base64Service{}
+
+	tests := []struct {
+		name          string
+		encodingName  string
+		encodedSample string
+	}{
+		{
+			name:          "URL safe variant",
+			encodingName:  "url",
+			encodedSample: base64.URLEncoding.EncodeToString([]byte("hello")),
+		},
+		{
+			name:          "raw standard variant",
+			encodingName:  "raw-standard",
+			encodedSample: base64.RawStdEncoding.EncodeToString([]byte("hello")),
+		},
+		{
+			name:          "raw URL safe variant",
+			encodingName:  "raw-url",
+			encodedSample: base64.RawURLEncoding.EncodeToString([]byte("hello")),
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			encoded, err := service.Encode([]byte("hello"), tt.encodingName)
+			if err != nil {
+				t.Fatalf("Encode unexpected error: %v", err)
+			}
+			if encoded != tt.encodedSample {
+				t.Fatalf("Encode = %q, want %q", encoded, tt.encodedSample)
+			}
+
+			decoded, err := service.Decode([]byte(encoded), tt.encodingName)
+			if err != nil {
+				t.Fatalf("Decode unexpected error: %v", err)
+			}
+			if decoded != "hello" {
+				t.Fatalf("Decode = %q, want %q", decoded, "hello")
+			}
+		})
+	}
+}
+
+func TestBase64RejectsUnknownEncoding(t *testing.T) {
+	t.Parallel()
+
+	service := Base64Service{}
+
+	if _, err := service.Encode([]byte("hello"), "does-not-exist"); !errors.Is(err, ErrBase64UnknownEncoding) {
+		t.Fatalf("Encode error = %v, want %v", err, ErrBase64UnknownEncoding)
+	}
+
+	if _, err := service.Decode([]byte("hello"), "does-not-exist"); !errors.Is(err, ErrBase64UnknownEncoding) {
+		t.Fatalf("Decode error = %v, want %v", err, ErrBase64UnknownEncoding)
 	}
 }
