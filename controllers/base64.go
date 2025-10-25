@@ -18,7 +18,7 @@ type base64Response struct {
 }
 
 func (u *Utils) Encode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Add("Content-Type", "text/html")
 	encoded, err := u.Base64Service.Encode([]byte(r.PostFormValue("str")), r.PostFormValue("encoding"))
 	if err != nil {
 		message := "The selected Base64 variant is not supported."
@@ -34,7 +34,7 @@ func (u *Utils) Encode(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *Utils) Decode(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Add("Content-Type", "text/html")
 
 	str, err := u.Base64Service.Decode([]byte(r.PostFormValue("str")), r.PostFormValue("encoding"))
 	if err != nil {

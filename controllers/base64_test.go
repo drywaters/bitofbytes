@@ -53,8 +53,8 @@ func TestUtilsEncodeWritesEncodedString(t *testing.T) {
 		t.Fatalf("Encode status code = %d, want %d", rr.Code, http.StatusOK)
 	}
 
-	if got := rr.Header().Get("Content-Type"); got != "text/html; charset=utf-8" {
-		t.Fatalf("Content-Type header = %q, want %q", got, "text/html; charset=utf-8")
+	if got := rr.Header().Get("Content-Type"); got != "text/html" {
+		t.Fatalf("Content-Type header = %q, want %q", got, "text/html")
 	}
 
 	body := rr.Body.String()
