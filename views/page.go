@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io"
 	"io/fs"
 	"log/slog"
 	"net/http"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/csrf"
@@ -34,7 +34,6 @@ func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 			return p.category
 		},
 	})
-	w.Header().Set("Content-Type", "text/html")
 	var buf bytes.Buffer
 	err = tpl.Execute(&buf, data)
 	if err != nil {
@@ -43,7 +42,18 @@ func (p Page) Execute(w http.ResponseWriter, r *http.Request, data any) {
 		return
 	}
 
-	io.Copy(w, &buf)
+	content := buf.Bytes()
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Content-Length", strconv.Itoa(len(content)))
+
+	if r.Method == http.MethodHead {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if _, err := w.Write(content); err != nil {
+		slog.Error("writing template response", "error", err)
+	}
 }
 
 func Must(p Page, err error) Page {
