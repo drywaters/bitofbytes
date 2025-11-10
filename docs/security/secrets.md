@@ -75,7 +75,7 @@ the runtime environment and exits cleanly when required values are absent.
 ## Build verification
 
 The application still builds cleanly after these changes. Running `go test
-./...` against the module (using Go 1.24.3 in CI) succeeds without requiring a
+./...` against the module (using Go 1.22.x in CI) succeeds without requiring a
 `.env` file because the configuration loader only attempts to read one when it
 is present on disk. This matches both the local development and container
 runtime expectations.
