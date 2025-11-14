@@ -6,14 +6,15 @@
 - Controllers live in `controllers/`, services and data types live in `models/`, reusable view helpers live in `views/`, and Go HTML templates are under `templates/`.
 
 ## Configuration
-- Runtime configuration is loaded from environment variables via `models.LoadEnvConfig()`.
+- Runtime configuration is loaded from environment variables via `models.LoadEnvConfig()`, which automatically loads a local `.env` file when present.
 - Copy `.env.template` to `.env` (the app uses `github.com/joho/godotenv` to load it automatically) and fill in:
   - `SERVER_ADDRESS` (default `:3000` for local development).
-  - `CSRF_KEY` (32-byte base64 string recommended) and `CSRF_SECURE` (set `false` for HTTP during local work).
+  - `CSRF_KEY` (32-byte base64 string recommended) and `CSRF_SECURE` (set `false` for HTTP during local work). In containerized environments you can omit `CSRF_KEY` and instead provide `CSRF_KEY_FILE`, which defaults to `/run/secrets/csrf_key`.
+  - `LOG_LEVEL` (debug, info, warn, or error; defaults to info locally and warn in Docker builds) and optionally `LOG_FORMAT` (`text` or `json`).
 
 ## Running the server
 - Run `go run ./cmd/bob` after preparing the `.env` file to start the web server locally.
-- For live-reload development you can install `air` and use `make run`, which runs `air` alongside the Tailwind watcher (`make tail-watch`).
+- For live-reload development install `air`; use `make run` to start the Go server with `air`, or `make local` to run `air` and the Tailwind watcher (`make tail-watch`) in parallel.
 - Tailwind CSS assets are generated from `tailwind/styles.css` into `static/styles.css`. Use `make tail-prod` to build a minified stylesheet for production.
 
 ## Content & rendering
@@ -22,7 +23,7 @@
 - Gorilla CSRF middleware wraps the router; if you add new POST routes make sure to include CSRF tokens in the forms (`csrf.TemplateField`).
 
 ## Tests & tooling
-- There are currently no automated tests. Add Go unit tests under the relevant package directories and run them with `go test ./...`.
+- Go unit tests cover controllers, middleware, models, and views. Run `go test ./...` before committing changes and add new tests alongside any new behavior.
 - Docker builds use the recipes in the `Makefile` (see `make docker-build` / `make docker-push`) and the multi-stage image defined in `Docker/Dockerfile`.
 
 ## Miscellaneous tips
